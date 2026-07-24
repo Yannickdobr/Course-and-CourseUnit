@@ -284,6 +284,34 @@ class AuthController {
         return res;
     }
 
+    /* ─── Formulaire de contact ─── */
+    @Value("${support.email:support@eduflex.pro}")
+    private String supportEmail;
+
+    @PostMapping("/contact")
+    public Map<String, Object> contact(@RequestBody Map<String, String> body) {
+        String name = body.getOrDefault("name", "").trim();
+        String email = body.getOrDefault("email", "").trim();
+        String subject = body.getOrDefault("subject", "Contact").trim();
+        String message = body.getOrDefault("message", "").trim();
+        if (name.isEmpty() || email.isEmpty() || message.length() < 10) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Nom, email et message (min. 10 caracteres) requis.");
+        }
+        String esc = message.replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>");
+        // 1) Vers le support
+        emailService.send(supportEmail, "[Contact] " + subject,
+                "<p><strong>De :</strong> " + name + " (" + email + ")</p>"
+                + "<p><strong>Sujet :</strong> " + subject + "</p><hr><p>" + esc + "</p>");
+        // 2) Accuse de reception a l'expediteur
+        emailService.send(email, "Nous avons bien recu votre message — EduFlex Pro",
+                "<p>Bonjour " + name + ",</p><p>Merci de nous avoir contactes. Notre equipe vous "
+                + "repondra sous 24h ouvrees.</p><p><em>Votre message :</em><br>" + esc + "</p>");
+        Map<String, Object> res = new HashMap<>();
+        res.put("message", "Message envoye.");
+        return res;
+    }
+
     @PostMapping("/password/reset")
     public Map<String, Object> resetPassword(@RequestBody Map<String, String> body) {
         String token = body.get("token");

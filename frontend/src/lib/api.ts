@@ -160,6 +160,14 @@ export const authApi = {
     return data.message || "Mot de passe réinitialisé.";
   },
 
+  async contact(form: { name: string; email: string; subject: string; message: string }): Promise<void> {
+    const res = await fetch(`${AUTH_API}/api/auth/contact`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form), cache: "no-store",
+    });
+    if (!res.ok) throw new Error(await errorMessage(res, "Échec de l'envoi. Réessayez."));
+  },
+
   async getMentors(): Promise<Mentor[]> {
     try {
       const res = await fetch(`${AUTH_API}/api/auth/mentors`, { cache: "no-store" });

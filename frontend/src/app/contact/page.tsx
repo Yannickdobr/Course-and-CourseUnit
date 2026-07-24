@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { authApi } from "@/lib/api";
 import styles from "./page.module.css";
 
 const INFOS = [
@@ -32,9 +32,10 @@ export default function ContactPage() {
     }
     setLoading(true);
     try {
-      /* await fetch("/api/contact", { method:"POST", body: JSON.stringify(form) }) */
-      await new Promise((r) => setTimeout(r, 800));
+      await authApi.contact(form);
       setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Échec de l'envoi. Réessayez.");
     } finally {
       setLoading(false);
     }

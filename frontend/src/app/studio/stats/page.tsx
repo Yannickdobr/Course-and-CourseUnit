@@ -45,11 +45,10 @@ export default function StudioStatsPage() {
     const userName = user.name;
     async function loadStats() {
       try {
-        const [allCourses, allPurchases] = await Promise.all([
-          coursesApi.list(),
+        const [mine, allPurchases] = await Promise.all([
+          coursesApi.byInstructor(userName),
           paymentApi.getInstructorPurchases(userName)
         ]);
-        const mine = allCourses.filter((c) => c.instructor === userName);
         setCourses(mine);
         setPurchases(allPurchases);
       } catch (e) {
@@ -69,40 +68,38 @@ export default function StudioStatsPage() {
     );
   }
 
-  // Calculate dynamic stats
-  const totalStudentsCount = new Set(purchases.map(p => p.userId)).size; // Unique students
-  const totalViews = totalStudentsCount * 6; // Realistic view estimation multiplier
+  // Stats réelles à partir des achats et des cours du formateur.
+  const totalStudentsCount = new Set(purchases.map(p => p.userId)).size; // apprenants uniques
+  const totalSales = purchases.length;                                   // nombre de ventes
+  const totalRevenue = purchases.reduce((sum, p) => sum + p.net, 0);     // revenu net formateur
   const avgRating = courses.length > 0 ? (courses.reduce((a, c) => a + c.rating, 0) / courses.length) : 0.0;
-  const completionRate = purchases.length > 0 ? 68 : 0; // engagement score
 
   const KPIS = [
-    { label: "Apprenants uniques", val: fmt(totalStudentsCount), delta: 0,  icon: "ti-users",     bg: "var(--primary-light)", color: "var(--primary)" },
-    { label: "Vues estimées",      val: fmt(totalViews),          delta: 0,  icon: "ti-eye",       bg: "var(--orange-light)",  color: "var(--orange)" },
-    { label: "Note moyenne",       val: `${avgRating.toFixed(1)} ★`,         delta: 0,  icon: "ti-star",      bg: "var(--success-light)", color: "var(--success)" },
-    { label: "Taux d'engagement",  val: `${completionRate}%`,               delta: 0,  icon: "ti-percentage",  bg: "var(--pink-light)",    color: "var(--pink)" },
+    { label: "Apprenants uniques", val: fmt(totalStudentsCount), icon: "ti-users",     bg: "var(--primary-light)", color: "var(--primary)" },
+    { label: "Ventes",             val: fmt(totalSales),          icon: "ti-shopping-cart", bg: "var(--orange-light)",  color: "var(--orange)" },
+    { label: "Revenu (net)",       val: `${fmt(Math.round(totalRevenue))} XAF`, icon: "ti-coin", bg: "var(--success-light)", color: "var(--success)" },
+    { label: "Note moyenne",       val: `${avgRating.toFixed(1)} ★`, icon: "ti-star",   bg: "var(--pink-light)",    color: "var(--pink)" },
   ];
 
-  // Dynamic monthly learners data
+  // Séries mensuelles réelles (apprenants uniques + revenu net) sur 6 mois.
   const monthlyLearners: MonthPoint[] = [];
-  const monthlyViews: MonthPoint[] = [];
+  const monthlyRevenue: MonthPoint[] = [];
   const monthNames = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"];
-  
+
   for (let i = 5; i >= 0; i--) {
     const d = new Date();
     d.setMonth(d.getMonth() - i);
     const mName = monthNames[d.getMonth()];
     const mNum = d.getMonth();
     const yNum = d.getFullYear();
-    
-    // Purchases in this month
+
     const monthPurchases = purchases.filter((p) => {
       const pDate = new Date(p.createdAt);
       return pDate.getMonth() === mNum && pDate.getFullYear() === yNum;
     });
 
-    const uniqueStudents = new Set(monthPurchases.map(p => p.userId)).size;
-    monthlyLearners.push({ month: mName, value: uniqueStudents });
-    monthlyViews.push({ month: mName, value: uniqueStudents * 6 });
+    monthlyLearners.push({ month: mName, value: new Set(monthPurchases.map(p => p.userId)).size });
+    monthlyRevenue.push({ month: mName, value: Math.round(monthPurchases.reduce((s, p) => s + p.net, 0)) });
   }
 
   // Course performance list
@@ -158,9 +155,9 @@ export default function StudioStatsPage() {
 
         <section className={styles.card}>
           <div className={styles.cardHead}>
-            <h2 className={styles.cardTitle}><i className="ti ti-eye" aria-hidden="true" /> Vues des cours</h2>
+            <h2 className={styles.cardTitle}><i className="ti ti-coin" aria-hidden="true" /> Revenu net (XAF)</h2>
           </div>
-          <BarChart data={monthlyViews} orange />
+          <BarChart data={monthlyRevenue} orange />
         </section>
       </div>
 
