@@ -1,0 +1,39 @@
+@keyframes shimmer {
+  0%   { opacity: 0.5; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+.card {
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.thumb {
+  height: 140px;
+  background: var(--primary-light);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.body { padding: 1rem; }
+
+.line {
+  background: var(--primary-light);
+  border-radius: 4px;
+  margin-bottom: 10px;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+.short      { height: 10px; width: 40%; }
+.mid        { height: 10px; width: 65%; }
+.full       { height: 14px; width: 90%; }
+.labelLine  { height: 10px; width: 80px; margin-bottom: 16px; }
+.titleLine  { height: 20px; width: 340px; margin-bottom: 32px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 2rem;
+}

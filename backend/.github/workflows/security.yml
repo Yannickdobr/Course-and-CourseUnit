@@ -1,0 +1,42 @@
+name: Security Audit
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # Tous les lundis à 6h UTC
+  workflow_dispatch:
+
+jobs:
+  npm-audit:
+    name: npm audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: 'npm'
+      - run: npm ci
+      - name: Audit dépendances npm
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Rapport OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'EduFlex Pro Backend'
+          path: '.'
+          format: 'HTML'
+          args: >
+            --enableRetired
+            --out reports
+
+      - name: Upload rapport
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: reports/
+
+
+================================================================================
+20. SCRIPTS UTILITAIRES
+================================================================================

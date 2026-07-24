@@ -1,0 +1,198 @@
+.page { padding-bottom: 4rem; }
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  padding-top: 1.5rem;
+  padding-bottom: 0;
+  flex-wrap: wrap;
+}
+.breadcrumb a { color: var(--primary); }
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* ── Hero (fond blanc + bordures) ── */
+.hero {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+  padding-top: 2rem;
+  padding-bottom: 2.5rem;
+  flex-wrap: wrap;
+  background: var(--bg-white);
+  border-top: 1.5px solid var(--border);
+  border-bottom: 1.5px solid var(--border);
+  margin-top: 1rem;
+}
+
+/* ── Avatar ── */
+.avatarLg {
+  position: relative;
+  width: 115px;
+  height: 115px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 3.2rem;
+  border: 3px solid var(--bg-white);
+  outline: 3px solid var(--border);
+}
+.verifiedBig {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  background: var(--success);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-white);
+}
+
+/* ── Infos ── */
+.heroInfo { flex: 1; min-width: 260px; }
+
+.nameLine {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.25rem;
+}
+
+.name { font-size: clamp(1.3rem, 3vw, 1.8rem); color: var(--text); }
+
+.badge {
+  background: var(--gold);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  padding: 3px 12px;
+}
+
+.title {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+
+.bio {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  max-width: 580px;
+  margin-bottom: 1.1rem;
+}
+
+/* ── Chips ── */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; }
+
+.chip {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  padding: 4px 12px;
+  color: var(--text-secondary);
+}
+
+.chipLang {
+  background: var(--primary-light);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  padding: 4px 12px;
+  color: var(--primary-dark);
+}
+
+/* ── Section cours ── */
+.courses {
+  padding-top: 2.5rem;
+}
+.courses h2 { margin-bottom: 1.25rem; }
+
+.courseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.courseCard {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.courseCard:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.courseThumb {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+.courseBody { flex: 1; min-width: 0; }
+
+.courseCategory {
+  font-size: 0.68rem;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 3px;
+}
+
+.courseTitle {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.35;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.courseMeta {
+  display: flex;
+  gap: 10px;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.coursePrice { color: var(--orange); font-weight: 600; }
+
+/* ── Retour ── */
+.backRow { padding-top: 1.5rem; }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .hero       { flex-direction: column; align-items: center; text-align: center; padding-left: 1.5rem; padding-right: 1.5rem; }
+  .chips      { justify-content: center; }
+  .nameLine   { justify-content: center; }
+  .courseGrid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,333 @@
+/* ─── Page ─── */
+.page { padding: 2rem 1.75rem; max-width: 1100px; }
+
+/* ─── Header ─── */
+.header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+}
+.title { font-size: 1.2rem; font-weight: 600; color: var(--text); }
+.sub   { font-size: 0.84rem; color: var(--text-secondary); margin-top: 3px; }
+
+.btnExplore {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 18px;
+  background: var(--primary); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font-size: 0.84rem; font-weight: 600;
+  font-family: var(--font-body); text-decoration: none;
+  white-space: nowrap; flex-shrink: 0;
+  transition: background 0.2s, transform 0.15s;
+}
+.btnExplore:hover { background: var(--primary-hover); transform: translateY(-1px); }
+.btnExplore i { font-size: 15px; }
+
+/* ─── Toolbar ─── */
+.toolbar {
+  display: flex; align-items: center;
+  gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;
+}
+
+.searchBox {
+  flex: 1; min-width: 220px;
+  position: relative;
+  display: flex; align-items: center;
+}
+.searchBox > i {
+  position: absolute; left: 11px;
+  color: var(--text-muted); font-size: 15px;
+  pointer-events: none;
+}
+.searchInput {
+  width: 100%;
+  padding: 9px 32px 9px 34px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 0.86rem;
+  color: var(--text); background: var(--bg-white);
+  outline: none; transition: border-color 0.2s;
+}
+.searchInput:focus { border-color: var(--primary); }
+.clearSearch {
+  position: absolute; right: 9px;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted); font-size: 13px;
+  display: flex; align-items: center;
+  padding: 2px;
+  transition: color 0.15s;
+}
+.clearSearch:hover { color: var(--text); }
+
+.toolbarRight { display: flex; align-items: center; gap: 0.5rem; }
+
+.sortSelect {
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 0.84rem;
+  color: var(--text); background: var(--bg-white);
+  outline: none; cursor: pointer;
+  transition: border-color 0.2s;
+}
+.sortSelect:focus { border-color: var(--primary); }
+
+.viewToggle {
+  display: flex;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.viewBtn {
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px;
+  background: var(--bg-white); border: none;
+  color: var(--text-muted); font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.viewBtn:hover { background: var(--bg); color: var(--primary); }
+.viewBtnActive { background: var(--primary-light) !important; color: var(--primary) !important; }
+
+/* ─── Filtres ─── */
+.filters {
+  display: flex; gap: 0.5rem;
+  flex-wrap: wrap; margin-bottom: 1.5rem;
+}
+.filterBtn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 7px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 0.82rem; font-weight: 500;
+  font-family: var(--font-body); cursor: pointer;
+  transition: all 0.18s;
+}
+.filterBtn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.filterActive { background: var(--primary) !important; border-color: var(--primary) !important; color: #fff !important; }
+.filterCount {
+  min-width: 20px; height: 20px;
+  background: rgba(0,0,0,0.12);
+  border-radius: var(--radius-full);
+  font-size: 0.7rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 5px;
+}
+.filterActive .filterCount { background: rgba(255,255,255,0.25); }
+
+/* ─── Progress bar partagée ─── */
+.progressBarBg {
+  flex: 1; height: 5px;
+  background: var(--border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  min-width: 60px;
+}
+.progressBarFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+
+/* ─── Vue LISTE ─── */
+.listContainer {
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.listRow {
+  display: grid;
+  grid-template-columns: 52px 1fr 200px 110px 200px;
+  gap: 1rem; align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1.5px solid var(--border-gray);
+  transition: background 0.15s;
+}
+.listRow:last-child { border-bottom: none; }
+.listRow:hover { background: var(--bg); }
+
+.listThumb {
+  width: 48px; height: 48px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; flex-shrink: 0;
+}
+
+.listInfo { min-width: 0; }
+.listCategory {
+  font-size: 0.68rem; color: var(--primary);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+.listTitle {
+  font-size: 0.9rem; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+.listMeta { font-size: 0.72rem; color: var(--text-muted); }
+
+.listProgress {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.listProgressBar {
+  height: 5px;
+  background: var(--border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.listProgressMeta { font-size: 0.72rem; color: var(--text-muted); }
+
+.listStatus {
+  display: inline-block;
+  font-size: 0.72rem; font-weight: 600;
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.listActions { display: flex; align-items: center; gap: 0.5rem; justify-content: flex-end; }
+
+/* ─── Vue GRILLE ─── */
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.gridCard {
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.gridCard:hover {
+  border-color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
+}
+
+.gridCardTop {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 0.25rem;
+}
+.gridThumb {
+  width: 48px; height: 48px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem;
+}
+.statusChip {
+  font-size: 0.7rem; font-weight: 600;
+  border-radius: var(--radius-full); padding: 3px 10px;
+}
+
+.gridCategory {
+  font-size: 0.68rem; color: var(--primary);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.gridTitle {
+  font-size: 0.9rem; font-weight: 600; color: var(--text);
+  line-height: 1.35;
+}
+
+.gridProgress { display: flex; align-items: center; gap: 0.5rem; margin: 0.25rem 0; }
+.progressLabel { font-size: 0.75rem; font-weight: 600; color: var(--text); flex-shrink: 0; }
+
+.gridMeta { font-size: 0.72rem; color: var(--text-muted); }
+
+.gridActions {
+  display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;
+}
+
+/* ─── Boutons partagés ─── */
+.btnContinue {
+  display: inline-flex; align-items: center; gap: 5px;
+  flex: 1; justify-content: center;
+  padding: 8px 14px;
+  background: var(--primary); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font-size: 0.8rem; font-weight: 600;
+  font-family: var(--font-body); text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.btnContinue:hover { background: var(--primary-hover); }
+.btnContinue i { font-size: 13px; }
+
+.btnDetails {
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted); font-size: 1rem;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+.btnDetails:hover { border-color: var(--primary); color: var(--primary); }
+
+/* ─── Empty state ─── */
+.empty {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.75rem; padding: 4rem 2rem; text-align: center;
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+}
+.emptyIcon  { font-size: 3rem; }
+.emptyTitle { font-size: 1rem; font-weight: 600; color: var(--text); }
+.emptySub   { font-size: 0.86rem; color: var(--text-secondary); }
+.btnReset {
+  padding: 8px 18px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-secondary);
+  font-size: 0.84rem; font-family: var(--font-body); cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btnReset:hover { border-color: var(--primary); color: var(--primary); }
+
+/* ─── Bannière de bas de page ─── */
+.bottomBanner {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--primary-light);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;
+}
+.bottomBannerText {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.88rem; color: var(--primary-dark);
+}
+.bottomBannerText i { color: var(--primary); font-size: 1rem; }
+.bottomBannerBtn {
+  font-size: 0.84rem; font-weight: 600;
+  color: var(--primary); text-decoration: none;
+  white-space: nowrap;
+}
+.bottomBannerBtn:hover { text-decoration: underline; }
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .listRow { grid-template-columns: 48px 1fr 100px; }
+  .listProgress, .listStatus { display: none; }
+}
+@media (max-width: 640px) {
+  .page { padding: 1rem; }
+  .listRow { grid-template-columns: 42px 1fr; }
+  .listActions { display: none; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .toolbarRight { justify-content: space-between; }
+}

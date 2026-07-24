@@ -1,0 +1,1 @@
+const { Client } = require('pg'); const client = new Client({ user: 'postgres', password: '65732Pauline', host: 'localhost', port: 5433, database: 'eduflex_pro' }); client.connect().then(() => client.query('SELECT * FROM users')).then(res => { console.log(res.rows); client.end() });

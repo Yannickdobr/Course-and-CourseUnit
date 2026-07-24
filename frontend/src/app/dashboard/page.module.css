@@ -1,0 +1,157 @@
+.page { padding: 2rem 1.75rem; max-width: 1100px; }
+
+/* ── Bienvenue ── */
+.welcome { margin-bottom: 1.5rem; }
+.welcomeTitle { font-size: 1.2rem; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.welcomeSub   { font-size: 0.86rem; color: var(--text-secondary); }
+
+/* ── Stats ── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 1.75rem;
+}
+.statCard {
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+.statCard:hover { border-color: var(--primary); }
+.statLabel {
+  font-size: 0.7rem; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 5px;
+}
+.statVal { font-size: 1.5rem; font-weight: 600; color: var(--text); }
+
+/* ── Section header ── */
+.sectionHeader {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 0.875rem;
+}
+.sectionTitle { font-size: 0.92rem; font-weight: 600; color: var(--text); }
+.seeAll {
+  font-size: 0.78rem; color: var(--primary);
+  text-decoration: none; transition: opacity 0.2s;
+}
+.seeAll:hover { opacity: 0.7; }
+
+/* ── Cours ── */
+.coursesList { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.5rem; }
+
+.courseRow {
+  display: grid;
+  grid-template-columns: 46px 1fr 140px;
+  gap: 12px; align-items: center;
+  padding: 0.875rem 1rem;
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-decoration: none; color: inherit;
+  transition: border-color 0.2s;
+}
+.courseRow:hover { border-color: var(--primary); }
+
+.courseThumb {
+  width: 42px; height: 42px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; flex-shrink: 0;
+}
+
+.courseTitle { font-size: 0.88rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.courseMeta  { font-size: 0.75rem; color: var(--text-muted); }
+
+.progressWrap { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; }
+.progressBar {
+  width: 120px; height: 5px;
+  background: var(--border); border-radius: 20px; overflow: hidden;
+}
+.progressFill { height: 100%; border-radius: 20px; transition: width 0.3s; }
+.progressPct  { font-size: 0.75rem; color: var(--text-secondary); }
+.progressDone {
+  font-size: 0.75rem; color: var(--success); font-weight: 500;
+  display: flex; align-items: center; gap: 3px;
+}
+.progressDone i { font-size: 13px; }
+
+/* ── Grille inférieure ── */
+.bottomGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.card {
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.1rem;
+}
+
+/* ── Certificats ── */
+.certsList { list-style: none; display: flex; flex-direction: column; }
+.certItem {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--border-gray);
+}
+.certItem:last-child { border-bottom: none; padding-bottom: 0; }
+
+.certIcon {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--success-light);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--success); font-size: 17px; flex-shrink: 0;
+}
+.certTitle { font-size: 0.82rem; font-weight: 500; color: var(--text); margin-bottom: 1px; }
+.certDate  { font-size: 0.72rem; color: var(--text-muted); }
+
+.certActions { margin-left: auto; display: flex; gap: 5px; }
+.iconBtn {
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 7px; padding: 5px 7px;
+  cursor: pointer; color: var(--text-secondary);
+  font-size: 14px; display: flex; align-items: center;
+  text-decoration: none; transition: all 0.15s;
+}
+.iconBtn:hover { border-color: var(--primary); color: var(--primary); }
+
+/* ── Liste de souhaits ── */
+.wishList { list-style: none; display: flex; flex-direction: column; }
+.wishItem {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-gray);
+}
+.wishItem:last-child { border-bottom: none; padding-bottom: 0; }
+
+.wishThumb {
+  width: 32px; height: 32px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+.wishTitle { font-size: 0.82rem; font-weight: 500; color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wishPrice { font-size: 0.8rem; font-weight: 600; color: var(--orange); white-space: nowrap; flex-shrink: 0; }
+.wishBtn {
+  font-size: 0.76rem; padding: 5px 10px;
+  border-radius: 6px; background: var(--primary); color: #fff;
+  border: none; cursor: pointer; white-space: nowrap;
+  font-family: var(--font-body); text-decoration: none;
+  transition: background 0.15s;
+}
+.wishBtn:hover { background: var(--primary-hover); }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .statsGrid   { grid-template-columns: 1fr 1fr; }
+  .bottomGrid  { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .courseRow { grid-template-columns: 42px 1fr; }
+  .progressWrap { display: none; }
+  .page { padding: 1rem; }
+}

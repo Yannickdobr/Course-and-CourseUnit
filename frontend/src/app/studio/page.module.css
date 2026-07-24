@@ -1,0 +1,123 @@
+.page { padding: 2rem 1.75rem; max-width: 1100px; }
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  gap: 1rem;
+}
+.title { font-size: 1.2rem; font-weight: 600; color: var(--text); }
+.sub   { font-size: 0.84rem; color: var(--text-secondary); margin-top: 3px; }
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.84rem;
+  color: #fff;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 18px;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--font-body);
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s;
+}
+.btnPrimary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+.btnPrimary i { font-size: 16px; }
+
+/* ── Stats ── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 1.75rem;
+}
+.statCard {
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  transition: border-color 0.2s;
+}
+.statCard:hover { border-color: var(--primary); }
+.statLabel { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
+.statVal   { font-size: 1.3rem; font-weight: 600; color: var(--text); }
+
+/* ── Liste des cours ── */
+.courseList {
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.courseRow {
+  display: grid;
+  grid-template-columns: 52px 1fr 150px 110px 90px 110px;
+  gap: 12px;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1.5px solid var(--border-gray);
+  transition: background 0.15s;
+}
+.courseRow:last-child { border-bottom: none; }
+.courseRow:hover      { background: var(--bg); }
+
+.thumb {
+  width: 48px; height: 48px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; flex-shrink: 0;
+}
+
+.info { min-width: 0; }
+.courseTitle {
+  font-size: 0.88rem; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.courseMeta { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+.coursePricing { text-align: right; }
+.price     { font-size: 0.9rem; font-weight: 700; color: var(--orange); }
+.priceNote { font-size: 0.7rem; color: var(--text-muted); }
+
+.courseStudents { text-align: center; }
+.studentsVal   { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+.studentsLabel { font-size: 0.7rem; color: var(--text-muted); }
+
+.statusBadge {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: var(--success-light);
+  color: var(--success);
+  text-align: center;
+}
+
+.editBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s;
+}
+.editBtn:hover { color: var(--primary); border-color: var(--primary); }
+.editBtn i { font-size: 14px; }
+
+@media (max-width: 900px) {
+  .stats { grid-template-columns: 1fr 1fr; }
+  .courseRow { grid-template-columns: 48px 1fr 100px 80px; }
+  .coursePricing, .statusBadge { display: none; }
+}

@@ -1,0 +1,1408 @@
+📂 Folder: ./
+    📄 Fichier: run-all.sh
+    -------------------- CONTENU --------------------
+#!/bin/bash
+
+# ==============================================================================
+# Script de compilation et de lancement global de l'écosystème EduFlex Spring Boot
+# ==============================================================================
+
+# 1. Gestion de l'arrêt propre (Trap)
+# Cette fonction sera appelée quand on fera Ctrl+C ou quand on tuera le script
+cleanup() {
+    echo ""
+    echo "🛑 Arrêt demandé ! Fermeture de tous les microservices en cours..."
+    
+    # Désactiver le trap pour éviter la boucle infinie
+    trap - SIGINT SIGTERM EXIT
+    
+    # Tuer tous les processus enfants (jobs en arrière-plan)
+    JOBS=$(jobs -p)
+    if [ -n "$JOBS" ]; then
+        kill -TERM $JOBS 2>/dev/null
+    fi
+    
+    echo "✅ Tous les services ont été arrêtés."
+    exit 0
+}
+
+# Associe la fonction cleanup aux signaux d'interruption
+trap cleanup SIGINT SIGTERM EXIT
+
+echo "🚀 Début du déploiement local EduFlex..."
+echo "📦 Étape 1 : Compilation du projet (Maven Build)..."
+
+# 2. Build complet du projet multi-modules
+mvn clean install -DskipTests
+BUILD_STATUS=$?
+
+if [ $BUILD_STATUS -ne 0 ]; then
+    echo "❌ Erreur lors de la compilation Maven. Le script va s'arrêter."
+    exit 1
+fi
+
+echo "✅ Compilation réussie !"
+echo "🔄 Étape 2 : Démarrage des microservices en arrière-plan..."
+
+# 3. Lancement des services en arrière-plan
+# Chaque commande est lancée avec '&' pour ne pas bloquer le terminal
+
+echo " ⏳ Lancement de eduflex-gateway..."
+mvn spring-boot:run -pl eduflex-gateway &
+
+echo " ⏳ Lancement de auth-service..."
+mvn spring-boot:run -pl auth-service &
+
+echo " ⏳ Lancement de user-service..."
+mvn spring-boot:run -pl user-service &
+
+echo " ⏳ Lancement de course-service..."
+mvn spring-boot:run -pl course-service &
+
+echo " ⏳ Lancement de media-service..."
+mvn spring-boot:run -pl media-service &
+
+echo " ⏳ Lancement de payment-service..."
+mvn spring-boot:run -pl payment-service &
+
+echo " ⏳ Lancement de notification-service..."
+mvn spring-boot:run -pl notification-service &
+
+echo " ⏳ Lancement de search-service..."
+mvn spring-boot:run -pl search-service &
+
+echo " ⏳ Lancement de analytics-service..."
+mvn spring-boot:run -pl analytics-service &
+
+echo " ⏳ Lancement de certificate-service..."
+mvn spring-boot:run -pl certificate-service &
+
+echo "================================================================="
+echo "🌟 TOUS LES SERVICES SONT EN COURS DE DÉMARRAGE !"
+echo "⚠️  Appuyez sur [CTRL+C] à tout moment pour TOUT ARRETER."
+echo "================================================================="
+
+# 4. Attendre la fin des processus
+# Maintient le script en vie tant que les processus fils tournent.
+# Si l'utilisateur fait Ctrl+C, la fonction cleanup() interviendra.
+wait
+
+    -------------------------------------------------
+
+    📄 Fichier: pom.xml
+    -------------------- CONTENU --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.0</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>com.eduflex</groupId>
+    <artifactId>eduflex-parent</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>eduflex-common</module>
+        <module>eduflex-gateway</module>
+        <module>auth-service</module>
+        <module>user-service</module>
+        <module>course-service</module>
+        <module>media-service</module>
+        <module>payment-service</module>
+        <module>notification-service</module>
+        <module>search-service</module>
+        <module>analytics-service</module>
+        <module>certificate-service</module>
+    </modules>
+
+    <properties>
+        <java.version>21</java.version>
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
+        <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+        <lombok.version>1.18.30</lombok.version>
+        <jjwt.version>0.12.5</jjwt.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.eduflex</groupId>
+                <artifactId>eduflex-common</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <excludes>
+                            <exclude>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
+
+    -------------------------------------------------
+
+    📂 Folder: course-service/
+        📄 Fichier: pom.xml
+        -------------------- CONTENU --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.eduflex</groupId>
+        <artifactId>eduflex-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>course-service</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.eduflex</groupId>
+            <artifactId>eduflex-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+    </dependencies>
+</project>
+
+        -------------------------------------------------
+
+        📂 Folder: src/
+            📂 Folder: main/
+                📂 Folder: resources/
+                    📄 Fichier: application.properties
+                    -------------------- CONTENU --------------------
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+server.port=3003
+
+                    -------------------------------------------------
+
+                📂 Folder: java/
+                    📂 Folder: com/
+                        📂 Folder: eduflex/
+                            📂 Folder: courseservice/
+                                📄 Fichier: CourseServiceApplication.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.courseservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class CourseServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(CourseServiceApplication.class, args);
+    }
+}
+
+                                -------------------------------------------------
+
+                                📄 Fichier: CourseService.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.courseservice;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.UUID;
+
+class Course {
+    private UUID id;
+    private String title;
+    private String description;
+    private double price;
+    private boolean published;
+    // Getters and Setters mocked for snippet
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
+    public boolean isPublished() { return published; }
+    public void setPublished(boolean published) { this.published = published; }
+}
+
+@org.springframework.stereotype.Repository
+class CourseRepository {
+    public java.util.Optional<Course> findById(UUID id) { return java.util.Optional.empty(); }
+    public List<Course> findByPublishedTrue() { return java.util.Collections.emptyList(); }
+    public Course save(Course course) { return course; }
+}
+
+@Service
+class CourseService {
+    private final CourseRepository courseRepository;
+    
+    public CourseService(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
+    }
+    
+    @Cacheable(value = "courses", key = "#id")
+    public Course getCourseById(UUID id) {
+        return courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Course not found with id: " + id));
+    }
+    
+    @Cacheable(value = "all_courses")
+    public List<Course> getAllPublishedCourses() {
+        return courseRepository.findByPublishedTrue();
+    }
+    
+    @Transactional
+    @CacheEvict(value = {"courses", "all_courses"}, allEntries = true)
+    public Course createCourse(Course course) {
+        return courseRepository.save(course);
+    }
+    
+    @Transactional
+    @CacheEvict(value = "courses", key = "#id")
+    public Course updateCourse(UUID id, Course courseDetails) {
+        Course course = getCourseById(id);
+        course.setTitle(courseDetails.getTitle());
+        course.setDescription(courseDetails.getDescription());
+        course.setPrice(courseDetails.getPrice());
+        course.setPublished(courseDetails.isPublished());
+        return courseRepository.save(course);
+    }
+}
+
+                                -------------------------------------------------
+
+    📂 Folder: payment-service/
+        📄 Fichier: pom.xml
+        -------------------- CONTENU --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.eduflex</groupId>
+        <artifactId>eduflex-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>payment-service</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.eduflex</groupId>
+            <artifactId>eduflex-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>25.0.0</version>
+        </dependency>
+    </dependencies>
+</project>
+
+        -------------------------------------------------
+
+        📂 Folder: src/
+            📂 Folder: main/
+                📂 Folder: resources/
+                    📄 Fichier: application.properties
+                    -------------------- CONTENU --------------------
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+server.port=3005
+stripe.api.key=dummy
+stripe.webhook.secret=dummy
+
+                    -------------------------------------------------
+
+                📂 Folder: java/
+                    📂 Folder: com/
+                        📂 Folder: eduflex/
+                            📂 Folder: paymentservice/
+                                📄 Fichier: PaymentServiceApplication.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.paymentservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class PaymentServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(PaymentServiceApplication.class, args);
+    }
+}
+
+                                -------------------------------------------------
+
+                                📄 Fichier: PaymentService.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.paymentservice;
+
+import com.stripe.Stripe;
+import com.stripe.model.checkout.Session;
+import com.stripe.param.checkout.SessionCreateParams;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import jakarta.annotation.PostConstruct;
+import java.util.UUID;
+
+@Service
+class PaymentService {
+    @Value("${stripe.api.key}")
+    private String stripeApiKey;
+    
+    @Value("${stripe.webhook.secret}")
+    private String webhookSecret;
+    
+    @PostConstruct
+    public void init() {
+        Stripe.apiKey = stripeApiKey;
+    }
+
+    public String createCheckoutSession(UUID courseId, String userEmail, long priceInCents) throws Exception {
+        SessionCreateParams params = SessionCreateParams.builder()
+                .setMode(SessionCreateParams.Mode.PAYMENT)
+                .setSuccessUrl("https://eduflex.pro/payment/success?session_id={CHECKOUT_SESSION_ID}")
+                .setCancelUrl("https://eduflex.pro/payment/cancel")
+                .putMetadata("course_id", courseId.toString())
+                .putMetadata("user_email", userEmail)
+                .addLineItem(
+                        SessionCreateParams.LineItem.builder()
+                                .setQuantity(1L)
+                                .setPriceData(
+                                        SessionCreateParams.LineItem.PriceData.builder()
+                                                .setCurrency("eur")
+                                                .setUnitAmount(priceInCents)
+                                                .setProductData(
+                                                        SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                                .setName("Course Enrollment")
+                                                                .build()
+                                                )
+                                                .build()
+                                )
+                                .build()
+                )
+                .build();
+        Session session = Session.create(params);
+        return session.getUrl();
+    }
+}
+
+                                -------------------------------------------------
+
+    📂 Folder: notification-service/
+        📄 Fichier: pom.xml
+        -------------------- CONTENU --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.eduflex</groupId>
+        <artifactId>eduflex-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>notification-service</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.eduflex</groupId>
+            <artifactId>eduflex-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+    </dependencies>
+</project>
+
+        -------------------------------------------------
+
+        📂 Folder: src/
+            📂 Folder: main/
+                📂 Folder: resources/
+                    📄 Fichier: application.properties
+                    -------------------- CONTENU --------------------
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+server.port=3006
+spring.mail.host=localhost
+
+                    -------------------------------------------------
+
+                📂 Folder: java/
+                    📂 Folder: com/
+                        📂 Folder: eduflex/
+                            📂 Folder: notificationservice/
+                                📄 Fichier: NotificationServiceApplication.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.notificationservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class NotificationServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(NotificationServiceApplication.class, args);
+    }
+}
+
+                                -------------------------------------------------
+
+                                📄 Fichier: NotificationListener.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.notificationservice;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+import jakarta.mail.internet.MimeMessage;
+
+@Service
+class NotificationListener {
+    private static final Logger log = LoggerFactory.getLogger(NotificationListener.class);
+    private final JavaMailSender mailSender;
+
+    public NotificationListener(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
+
+    @KafkaListener(topics = "user-registered-topic", groupId = "notification-group")
+    public void handleUserRegistration(String email) {
+        log.info("Received Kafka message: User registered with email: {}", email);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(email);
+            helper.setSubject("Bienvenue sur EduFlex !");
+            helper.setText("<h1>Bienvenue sur notre plateforme d'apprentissage innovante !</h1>", true);
+            mailSender.send(message);
+            log.info("Welcome email sent successfully to {}", email);
+        } catch (Exception e) {
+            log.error("Failed to send welcome email to: {}", email, e);
+        }
+    }
+}
+
+                                -------------------------------------------------
+
+    📂 Folder: auth-service/
+        📄 Fichier: pom.xml
+        -------------------- CONTENU --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.eduflex</groupId>
+        <artifactId>eduflex-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>auth-service</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.eduflex</groupId>
+            <artifactId>eduflex-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.78</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+        </dependency>
+    </dependencies>
+</project>
+
+        -------------------------------------------------
+
+        📂 Folder: src/
+            📂 Folder: main/
+                📂 Folder: resources/
+                    📄 Fichier: application.properties
+                    -------------------- CONTENU --------------------
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+server.port=3001
+
+                    -------------------------------------------------
+
+                📂 Folder: java/
+                    📂 Folder: com/
+                        📂 Folder: eduflex/
+                            📂 Folder: authservice/
+                                📄 Fichier: AuthServiceApplication.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.authservice;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class AuthServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(AuthServiceApplication.class, args);
+    }
+}
+
+@Service
+class JwtService {
+    @Value("${jwt.secret:defaultSecretKeyWithAtLeast32CharactersLongToEnsureHS512SecurityRequirementIsMet1234567890}")
+    private String jwtSecret;
+    @Value("${jwt.expiration:86400000}")
+    private long jwtExpiration;
+    @Value("${jwt.refresh-expiration:604800000}")
+    private long jwtRefreshExpiration;
+
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = this.jwtSecret.getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+    public String generateToken(String username, String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", "ROLE_" + role);
+        return buildToken(claims, username, jwtExpiration);
+    }
+    public String generateRefreshToken(String username) {
+        return buildToken(new HashMap<>(), username, jwtRefreshExpiration);
+    }
+    private String buildToken(Map<String, Object> extraClaims, String subject, long expiration) {
+        return Jwts.builder()
+                .claims(extraClaims)
+                .subject(subject)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey(), Jwts.SIG.HS512)
+                .compact();
+    }
+    public boolean isTokenValid(String token, String username) {
+        final String extractedUsername = extractUsername(token);
+        return (extractedUsername.equals(username)) && !isTokenExpired(token);
+    }
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+    private Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+}
+
+@Configuration
+class SecurityConfig {
+    // private final JwtAuthenticationFilter jwtAuthFilter; // Mocked for snippet
+    
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+                        .anyRequest().authenticated()
+                );
+                // .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new Argon2PasswordEncoder(16, 32, 1, 65536, 10);
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+}
+
+                                -------------------------------------------------
+
+    📂 Folder: analytics-service/
+        📄 Fichier: pom.xml
+        -------------------- CONTENU --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.eduflex</groupId>
+        <artifactId>eduflex-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>analytics-service</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.eduflex</groupId>
+            <artifactId>eduflex-common</artifactId>
+        </dependency>
+    </dependencies>
+</project>
+
+        -------------------------------------------------
+
+        📂 Folder: src/
+            📂 Folder: main/
+                📂 Folder: resources/
+                    📄 Fichier: application.properties
+                    -------------------- CONTENU --------------------
+server.port=3008
+
+                    -------------------------------------------------
+
+                📂 Folder: java/
+                    📂 Folder: com/
+                        📂 Folder: eduflex/
+                            📂 Folder: analyticsservice/
+                                📄 Fichier: AnalyticsServiceApplication.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.analyticsservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class AnalyticsServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(AnalyticsServiceApplication.class, args);
+    }
+}
+
+                                -------------------------------------------------
+
+    📂 Folder: eduflex-common/
+        📄 Fichier: pom.xml
+        -------------------- CONTENU --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.eduflex</groupId>
+        <artifactId>eduflex-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>eduflex-common</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
+        </dependency>
+    </dependencies>
+</project>
+
+        -------------------------------------------------
+
+        📂 Folder: src/
+            📂 Folder: main/
+                📂 Folder: resources/
+                📂 Folder: java/
+                    📂 Folder: com/
+                        📂 Folder: eduflex/
+                            📂 Folder: eduflexcommon/
+    📂 Folder: keys/
+        📄 Fichier: private.pem
+        -------------------- CONTENU --------------------
+-----BEGIN PRIVATE KEY-----
+MIIJRAIBADANBgkqhkiG9w0BAQEFAASCCS4wggkqAgEAAoICAQDYJkfVVyNQWIrB
+ci2fqBiOkrcWjdG3Ob5wOKUCz+M6IAGtgVx9XYdeNv02xnrF63pO2w50fsPJq8KS
+wuzrOrbZquDs6hmx5VBF+F8IAvhaFaoXcxY6wz5outLj9fQQOi3TFVqkyX99UBZw
+Qy3mF4qFF1YBriUraSNvdGICco3d/YhNgO64555U39LJ8aIqYhTyOnw1tvQ/8dVq
+OWVbGSw71RYQ13pNvkwrT8vd8dMElYDWx9ovfxOGgV3Eq+Qpn7Uy33SHrEaW48h0
+zsLPqZ0YyeZXZFAO1XofDMWu+PW3YIGv8+y0/iTIIsdLFBHln5J28krpS9UTDeE3
+XSDBiZQ/nNkUYMYIz52n08nJ8YZJqFR+B9s1HG7DsNyo7bs0umCgGVp/f6botPyd
+0nvgbCqxXr1VZ/7RH+iHpAPyO5jceictn9b/L7e4wsNWnLYEfln2ozIieJOLY3ts
+o7gm+Yg7sDSWP4+YA6Xm5yHACTu6wVdv9ZHN2a1HObDFk9V5C4KuRSbGfleLxaTC
+F0ju5nnMjO3iEWex9ghcSZQCm9igYkHrQb7Jouq2u35QR0E8qZvHrBBJG3yKUnu9
+HWxWh2NzA/al9dNPtqSJxZ8QgcUeOt+FCW1t/0PXJPIoHWvS7IRar5RI+fL8/z9J
+9flSzDTGQiLgoJqCatFHE/101kVHxwIDAQABAoICAB/eQQAI2WmKrGaKDYT5FSnM
+Itdd8HoZtuS3zUhlWySiPG0W4gqPxBoVdG7jg41zwvQmYvK1D+vHeagGukSSQwxD
+n+b+OuyaGSQ/0s8NFQ2/HPVZIAFo8OYjCV3X0PSlh0UUZGlgVf4lVTGXDgjbFq65
+upID2XIVjcZse9jNh/IfY729kTTM3XC5EUx55kVmcZ0nF1IaF9fnsWX4cWOlifqG
+V7sC8gLNWFCYcr/V3B1UZ4sDKz2OeFP/9dG94CVs6RvHi1hHg57Slab3JwzT/pf9
+iIsA/La7LcavLOQ3y46OWYCWL6OdxtGFIyoEGwFmbgNAhN/xsMge50Iw5lfyj1su
+OcaTKXDyI86Re5xiJuK9p/IwD5nJ8nFsL+zQTKe+2jWw3j79v88T/COgH9DNZdJZ
+C+0hn7uv1v5dEhJ4cY7VyU+6ywDOBSJ2iNuBI59hDAgiEc51pdPvYSkPBWnJMvZu
+PyUVHnwQVEQckfIZjk8vQDLAQxSeW0FqSeesHzV4IqArSQAOSIYUJ4BvaEqYFL1S
+rSDn4Kx1sPFBK73yQ6GdFsak33fbj6CcTexSE+1FgKMyFt4K5YuXLcAEHv0Wh7Ko
+KH5jJ2lqlyHAbC6A/oCq7MkBTVY05hjD5t0V4/mt5gxYxZX9X3fluxYqfoEYuFM7
+YcFDKeutBzRMmaJWMa7RAoIBAQDhp2e2g7MRCKjOIwaWKdoxlKmUte8v5RN0o0NG
+O39OPeDOnanac4sA+wslyuPeL+9MW/jATWNGTaLUsxF4TMvOeidn+VHLVPwyNBeR
+ASTTmXLpi/cAdH9EtPY7PEPESlQYI+NkGWPG+u33+Xbrfkn/rr26pNqCthKHna9N
+6Bwc/CiOkT7cxvc6iCBdK4WRoDI0m3jKzbNYJA16yd00AgndRz/OSS14EiPQCyED
+EBMIy+8xb7tbUyq+k4wN2H6/6nH8RV/ZWkSVhkHmcIqB2ek+Yr0WCfQgCdiKhpcf
+r+XqKMxH1n3HQxWpdcg22o5u1mU+lEC+bw62TrXF72mP/SAxAoIBAQD1N6rdeNE+
+s3+rjZ+picvZE9jY/qzTe0CmzRNbgEpVLgGQqE4nelJvclsRztWMrZL0lJIKG/r+
+7jnQkBeNa6OILtvMXBCxEx883oQMxrQsHLkHXxJoLWsR4h/EcitV3OEp4x61RMLV
+ZedVSnjK2vmfslBE3Yi6kuepoK+pFbYTViz1yA70s45kXKpyLVxkdaEyK+0fuB9u
+8l1MDeAYwEUVcQ2D6MmQemHvDWCgAEWHRh+mTRfzVTHvg8zPb1rYa98HUUwpRlu2
+G2WmWn4SwYcAPNNyZ+Z96yuGLNrgbg69WPdyOLupBkR7vY+I3mxsspeL8xLKd0GN
+kRdKiGwdhSF3AoIBAQDKQ7v7JWHEyvZEj7C/uRQTjSXUXp/fVn5x9kW/FmWuRFjV
+2wz8+sSGRIBhh9NovZ7J20bFWJi706s47KmkI3IryeK4mApxL+Q/O+JD37qa0Njn
+7sWgaswJUgvEXOiBcf6fBMw2VWvSV+omdD3cKH875+249zvGHl3NodIZCwzoDj5s
+TFUEoHPKy2n3GaPIPMfDz/geEPPI9cf/YCIfFBSze8H9ripLjjb7rH4SuL3XDLWC
+opxV595QpQDNCFnUvNkfPzADK55+SLGZVRdR/XnMqcTDlHh2n1yyDqI3jPuRQLCb
+U++6RK+ODj1Arfct8o8d4NWH3RRa5YKZwVfl8QaBAoIBAQClB6PcjVT1R8RiZlvP
+s8cW/v5ve2ZApbBrEZU3fW2JSf8PpdWDSBV2n5WetH6PwLkoFVz7pL0VGKqcLH1N
+VeWm3zJZpJQvN9lME8z29DuJfIMh7N/scLSgQnhyswtrK831bL7b67zb9Urs4cPN
+cfWRfmX7EsTUG84BIP1XZB83gEWd29gE41qvPJYRZWnKykeEBn/9WuL8vewAJU5u
+GefkeENKRT5yF4sVYQFobQZd9dmTCEtYHjwPH7qU2DJheKeOuy3wkUNjmaidfkVe
+xhPfGxCK7FX45G5UTJe5dxhAYkGWA4x4QpmQVZDl4htCRCctrpc033GknsL4DDwG
+2fQdAoIBAQDaHCFxteYEYwBWTTByh7CXbYkOvxGbEqAvb8qWZzvSStqwlG7D+6sA
+luXhTV4njb23/Zck6QWXRBqbqy7jdTFIIePrbDtuTN9YSRw0dhf0sLcnB5QK+2UU
+xyR/FDRk2OIZ/rWSNM9YYPqJL5p80My8aryppkiG9gSN8JzGvnAQHySTm7DpKM77
+yg7ORukO8Az8wieyVJEGnPmTfCekuKVGc3GyL9I3dPXva8wTmCBmiby8QxgB0/wf
+KApzvhUzgj80DpLIbiq9cUgSjnOGDpvCZQGyH0s8E76H+Tg62lT5COuo572VbL4c
+mS5xdOv6RIPvhO4xw3EjNowiovTTIVZS
+-----END PRIVATE KEY-----
+
+        -------------------------------------------------
+
+        📄 Fichier: public.pem
+        -------------------- CONTENU --------------------
+-----BEGIN PUBLIC KEY-----
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA2CZH1VcjUFiKwXItn6gY
+jpK3Fo3Rtzm+cDilAs/jOiABrYFcfV2HXjb9NsZ6xet6TtsOdH7DyavCksLs6zq2
+2arg7OoZseVQRfhfCAL4WhWqF3MWOsM+aLrS4/X0EDot0xVapMl/fVAWcEMt5heK
+hRdWAa4lK2kjb3RiAnKN3f2ITYDuuOeeVN/SyfGiKmIU8jp8Nbb0P/HVajllWxks
+O9UWENd6Tb5MK0/L3fHTBJWA1sfaL38ThoFdxKvkKZ+1Mt90h6xGluPIdM7Cz6md
+GMnmV2RQDtV6HwzFrvj1t2CBr/PstP4kyCLHSxQR5Z+SdvJK6UvVEw3hN10gwYmU
+P5zZFGDGCM+dp9PJyfGGSahUfgfbNRxuw7DcqO27NLpgoBlaf3+m6LT8ndJ74Gwq
+sV69VWf+0R/oh6QD8juY3HonLZ/W/y+3uMLDVpy2BH5Z9qMyIniTi2N7bKO4JvmI
+O7A0lj+PmAOl5uchwAk7usFXb/WRzdmtRzmwxZPVeQuCrkUmxn5Xi8WkwhdI7uZ5
+zIzt4hFnsfYIXEmUApvYoGJB60G+yaLqtrt+UEdBPKmbx6wQSRt8ilJ7vR1sVodj
+cwP2pfXTT7akicWfEIHFHjrfhQltbf9D1yTyKB1r0uyEWq+USPny/P8/SfX5Usw0
+xkIi4KCagmrRRxP9dNZFR8cCAwEAAQ==
+-----END PUBLIC KEY-----
+
+        -------------------------------------------------
+
+    📂 Folder: eduflex-gateway/
+        📄 Fichier: pom.xml
+        -------------------- CONTENU --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.eduflex</groupId>
+        <artifactId>eduflex-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>eduflex-gateway</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
+        </dependency>
+    </dependencies>
+</project>
+
+        -------------------------------------------------
+
+        📂 Folder: src/
+            📂 Folder: main/
+                📂 Folder: resources/
+                    📄 Fichier: application.properties
+                    -------------------- CONTENU --------------------
+server.port=3000
+
+                    -------------------------------------------------
+
+                📂 Folder: java/
+                    📂 Folder: com/
+                        📂 Folder: eduflex/
+                            📂 Folder: eduflexgateway/
+                                📄 Fichier: GatewayApplication.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.eduflexgateway;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class GatewayApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(GatewayApplication.class, args);
+    }
+}
+
+                                -------------------------------------------------
+
+    📂 Folder: media-service/
+        📄 Fichier: pom.xml
+        -------------------- CONTENU --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.eduflex</groupId>
+        <artifactId>eduflex-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>media-service</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.eduflex</groupId>
+            <artifactId>eduflex-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.25.11</version>
+        </dependency>
+    </dependencies>
+</project>
+
+        -------------------------------------------------
+
+        📂 Folder: src/
+            📂 Folder: main/
+                📂 Folder: resources/
+                    📄 Fichier: application.properties
+                    -------------------- CONTENU --------------------
+server.port=3004
+aws.access-key=dummy
+aws.secret-key=dummy
+aws.region=eu-west-1
+aws.s3.bucket=dummy-bucket
+
+                    -------------------------------------------------
+
+                📂 Folder: java/
+                    📂 Folder: com/
+                        📂 Folder: eduflex/
+                            📂 Folder: mediaservice/
+                                📄 Fichier: S3Service.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.mediaservice;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import java.time.Duration;
+
+@Service
+class S3Service {
+    @Value("${aws.s3.bucket}")
+    private String bucketName;
+    private final S3Presigner s3Presigner;
+    
+    public S3Service(@Value("${aws.access-key}") String accessKey,
+                     @Value("${aws.secret-key}") String secretKey,
+                     @Value("${aws.region}") String region) {
+        this.s3Presigner = S3Presigner.builder()
+                .region(Region.of(region))
+                .credentialsProvider(StaticCredentialsProvider.create(
+                        AwsBasicCredentials.create(accessKey, secretKey)
+                ))
+                .build();
+    }
+    
+    public String generatePresignedUploadUrl(String objectKey, String contentType) {
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(objectKey)
+                .contentType(contentType)
+                .build();
+                
+        PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofMinutes(15))
+                .putObjectRequest(putObjectRequest)
+                .build();
+                
+        PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
+        return presignedRequest.url().toString();
+    }
+}
+
+                                -------------------------------------------------
+
+                                📄 Fichier: MediaServiceApplication.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.mediaservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class MediaServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MediaServiceApplication.class, args);
+    }
+}
+
+                                -------------------------------------------------
+
+    📂 Folder: certificate-service/
+        📄 Fichier: pom.xml
+        -------------------- CONTENU --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.eduflex</groupId>
+        <artifactId>eduflex-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>certificate-service</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.eduflex</groupId>
+            <artifactId>eduflex-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.13.3</version>
+        </dependency>
+    </dependencies>
+</project>
+
+        -------------------------------------------------
+
+        📂 Folder: src/
+            📂 Folder: main/
+                📂 Folder: resources/
+                    📄 Fichier: application.properties
+                    -------------------- CONTENU --------------------
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+server.port=3009
+
+                    -------------------------------------------------
+
+                📂 Folder: java/
+                    📂 Folder: com/
+                        📂 Folder: eduflex/
+                            📂 Folder: certificateservice/
+                                📄 Fichier: PdfService.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.certificateservice;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
+
+@Service
+class PdfService {
+    public byte[] generatePdfCertificate(String studentName, String courseTitle) {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            Document document = new Document();
+            PdfWriter.getInstance(document, outputStream);
+
+            document.open();
+            document.add(new Paragraph("CERTIFICAT DE REUSSITE"));
+            document.add(new Paragraph("Le présent certificat est décerné à : " + studentName));
+            document.add(new Paragraph("Pour avoir complété avec succès la formation : " + courseTitle));
+            document.close();
+            
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Error during PDF compilation", e);
+        }
+    }
+}
+
+                                -------------------------------------------------
+
+                                📄 Fichier: CertificateServiceApplication.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.certificateservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class CertificateServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(CertificateServiceApplication.class, args);
+    }
+}
+
+                                -------------------------------------------------
+
+    📂 Folder: user-service/
+        📄 Fichier: pom.xml
+        -------------------- CONTENU --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.eduflex</groupId>
+        <artifactId>eduflex-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>user-service</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.eduflex</groupId>
+            <artifactId>eduflex-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>
+
+        -------------------------------------------------
+
+        📂 Folder: src/
+            📂 Folder: main/
+                📂 Folder: resources/
+                    📄 Fichier: application.properties
+                    -------------------- CONTENU --------------------
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+server.port=3002
+
+                    -------------------------------------------------
+
+                📂 Folder: java/
+                    📂 Folder: com/
+                        📂 Folder: eduflex/
+                            📂 Folder: userservice/
+                                📄 Fichier: UserServiceApplication.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.userservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class UserServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(UserServiceApplication.class, args);
+    }
+}
+
+                                -------------------------------------------------
+
+                                📄 Fichier: User.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.userservice;
+
+import jakarta.persistence.*;
+import lombok.Builder;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+enum Role { ADMIN, USER }
+
+@Entity
+class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    @Column(unique = true, nullable = false)
+    private String email;
+    @Column(nullable = false)
+    private String password;
+    @Column(nullable = false)
+    private String firstName;
+    @Column(nullable = false)
+    private String lastName;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+    @Builder.Default
+    private boolean enabled = true;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+}
+
+                                -------------------------------------------------
+
+    📂 Folder: search-service/
+        📄 Fichier: pom.xml
+        -------------------- CONTENU --------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.eduflex</groupId>
+        <artifactId>eduflex-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>search-service</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.eduflex</groupId>
+            <artifactId>eduflex-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+    </dependencies>
+</project>
+
+        -------------------------------------------------
+
+        📂 Folder: src/
+            📂 Folder: main/
+                📂 Folder: resources/
+                    📄 Fichier: application.properties
+                    -------------------- CONTENU --------------------
+spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+server.port=3007
+
+                    -------------------------------------------------
+
+                📂 Folder: java/
+                    📂 Folder: com/
+                        📂 Folder: eduflex/
+                            📂 Folder: searchservice/
+                                📄 Fichier: SearchComponents.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.searchservice;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
+
+@Document(indexName = "courses")
+class CourseDocument {
+    @Id
+    private String id;
+    @Field(type = FieldType.Text, analyzer = "french")
+    private String title;
+    @Field(type = FieldType.Text, analyzer = "french")
+    private String description;
+    @Field(type = FieldType.Keyword)
+    private String authorName;
+    @Field(type = FieldType.Double)
+    private double price;
+}
+
+@Service
+class AnalyticsListener {
+    private static final Logger log = LoggerFactory.getLogger(AnalyticsListener.class);
+    
+    @KafkaListener(topics = "clickstream-events-topic", groupId = "analytics-group")
+    public void consumeClickstream(String rawPayload) {
+        log.debug("Analytics - Event clickstream received: {}", rawPayload);
+        // Traitement de l'événement en temps réel et agrégation statistique
+    }
+}
+
+                                -------------------------------------------------
+
+                                📄 Fichier: SearchServiceApplication.java
+                                -------------------- CONTENU --------------------
+package com.eduflex.searchservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SearchServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SearchServiceApplication.class, args);
+    }
+}
+
+                                -------------------------------------------------
+

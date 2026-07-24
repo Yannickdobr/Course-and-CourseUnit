@@ -1,0 +1,67 @@
+.page { background: var(--bg); min-height: 100vh; }
+
+.hero { background: linear-gradient(135deg, var(--primary-light), var(--bg-white)); border-bottom: 1.5px solid var(--border); }
+.heroInner { max-width: 1120px; margin: 0 auto; padding: 3rem 1.5rem; text-align: center; }
+.heroBadge { display: inline-flex; align-items: center; gap: 6px; background: var(--bg-white); border: 1.5px solid var(--border); color: var(--primary); font-size: 0.78rem; font-weight: 600; padding: 5px 14px; border-radius: var(--radius-full); margin-bottom: 1rem; }
+.heroTitle { font-size: clamp(1.9rem, 4vw, 2.6rem); margin-bottom: 0.75rem; }
+.heroSub { font-size: 1rem; color: var(--text-secondary); max-width: 52ch; margin: 0 auto; }
+
+.container { max-width: 1120px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+.grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 2rem; align-items: start; }
+
+/* Cartes d'info */
+.infoCards { display: flex; flex-direction: column; gap: 1rem; }
+.infoCard {
+  display: flex; align-items: flex-start; gap: 1rem;
+  background: var(--bg-white); border: 1.5px solid var(--border);
+  border-radius: var(--radius-md); padding: 1.25rem;
+}
+.infoIcon { width: 44px; height: 44px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 21px; flex-shrink: 0; }
+.infoTitle { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.infoVal { font-size: 0.86rem; color: var(--text-secondary); }
+.infoVal a { color: var(--primary); }
+
+.socials { display: flex; gap: 0.6rem; margin-top: 0.5rem; }
+.social { width: 38px; height: 38px; border-radius: var(--radius-sm); background: var(--bg-white); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 18px; transition: all 0.18s; }
+.social:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+
+/* Formulaire */
+.formCard { background: var(--bg-white); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.75rem; }
+.formTitle { font-size: 1.1rem; font-weight: 600; color: var(--text); margin-bottom: 1.25rem; }
+.fieldGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
+.fieldFull { grid-column: 1 / -1; }
+.label { font-size: 0.82rem; font-weight: 500; color: var(--text); }
+.input, .textarea, .select {
+  width: 100%; padding: 11px 13px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 0.88rem; color: var(--text); background: var(--bg-white);
+  outline: none; transition: border-color 0.2s;
+}
+.input:focus, .textarea:focus, .select:focus { border-color: var(--primary); }
+.textarea { resize: vertical; min-height: 130px; }
+
+.submit {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%; padding: 12px; background: var(--primary); color: #fff; border: none;
+  border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 600; font-family: var(--font-body);
+  cursor: pointer; transition: background 0.2s; margin-top: 0.25rem;
+}
+.submit:hover { background: var(--primary-hover); }
+.submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.error { display: flex; align-items: center; gap: 7px; font-size: 0.8rem; color: var(--pink); background: var(--pink-light); border-radius: var(--radius-sm); padding: 9px 12px; margin-bottom: 1rem; }
+
+/* Succès */
+.success { text-align: center; padding: 2.5rem 1rem; }
+.successIcon { width: 64px; height: 64px; border-radius: 50%; background: var(--success-light); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 1.1rem; }
+.successTitle { font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+.successSub { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.25rem; }
+.successBtn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border: 1.5px solid var(--primary); color: var(--primary); border-radius: var(--radius-sm); background: transparent; font-size: 0.86rem; font-weight: 600; font-family: var(--font-body); cursor: pointer; }
+.successBtn:hover { background: var(--primary-light); }
+
+@media (max-width: 860px) {
+  .grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .fieldGrid { grid-template-columns: 1fr; }
+}

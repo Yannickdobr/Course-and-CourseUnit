@@ -1,0 +1,244 @@
+name: CD — Deploy to Kubernetes
+
+on:
+  workflow_run:
+    workflows: ["CI — Test & Build"]
+    types: [completed]
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environnement cible'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      service:
+        description: 'Service à déployer (laisser vide = tous)'
+        required: false
+        default: ''
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false  # Ne pas annuler les déploiements en cours
+
+jobs:
+
+  # ── DÉPLOIEMENT STAGING ──────────────────────────────────────────────────────
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://staging-api.eduflex.com
+    if: |
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'develop') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'staging')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure kubeconfig (EKS)
+        run: |
+          aws eks update-kubeconfig \
+            --name eduflex-staging-cluster \
+            --region eu-west-1
+
+      - name: Apply Kubernetes manifests (staging)
+        run: |
+          # Remplacer le namespace dans les manifests
+          sed -i 's/eduflex-prod/eduflex-staging/g' k8s/*.yaml k8s/**/*.yaml
+
+          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/configmap.yaml
+          kubectl apply -f k8s/rbac.yaml
+          kubectl apply -f k8s/deployments/
+          kubectl apply -f k8s/ingress.yaml
+          kubectl apply -f k8s/hpa.yaml
+
+      - name: Update image tags (staging)
+        run: |
+          SERVICES=(api-gateway auth-service user-service course-service \
+                    media-service payment-service notification-service \
+                    search-service analytics-service certificate-service)
+          TAG="develop-${{ github.sha }}"
+
+          for SERVICE in "${SERVICES[@]}"; do
+            if [ -z "${{ inputs.service }}" ] || [ "${{ inputs.service }}" == "$SERVICE" ]; then
+              kubectl set image deployment/$SERVICE \
+                $SERVICE=ghcr.io/${{ github.repository }}/$SERVICE:${TAG} \
+                -n eduflex-staging || true
+            fi
+          done
+
+      - name: Wait for rollout
+        run: |
+          SERVICES=(api-gateway auth-service user-service course-service \
+                    media-service payment-service notification-service \
+                    search-service analytics-service certificate-service)
+          for SERVICE in "${SERVICES[@]}"; do
+            kubectl rollout status deployment/$SERVICE \
+              -n eduflex-staging \
+              --timeout=300s || true
+          done
+
+      - name: Run smoke tests (staging)
+        run: |
+          sleep 20
+          curl -sf https://staging-api.eduflex.com/health || exit 1
+          echo "✅ Staging smoke test passé"
+
+  # ── DÉPLOIEMENT PRODUCTION ───────────────────────────────────────────────────
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://api.eduflex.com
+    if: |
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'production')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure kubeconfig (Production EKS)
+        run: |
+          aws eks update-kubeconfig \
+            --name eduflex-prod-cluster \
+            --region eu-west-1
+
+      - name: Run database migrations (production)
+        run: |
+          # Lancer les migrations dans un Job Kubernetes temporaire
+          kubectl apply -f - <<EOF
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: db-migration-${{ github.run_id }}
+            namespace: eduflex-prod
+          spec:
+            ttlSecondsAfterFinished: 300
+            template:
+              spec:
+                restartPolicy: Never
+                containers:
+                  - name: migration
+                    image: ghcr.io/${{ github.repository }}/auth-service:main-${{ github.sha }}
+                    command: ["node", "dist/migration/run.js"]
+                    envFrom:
+                      - configMapRef:
+                          name: eduflex-config
+                      - secretRef:
+                          name: eduflex-secrets
+          EOF
+
+          # Attendre que le Job se termine
+          kubectl wait --for=condition=complete \
+            job/db-migration-${{ github.run_id }} \
+            -n eduflex-prod \
+            --timeout=300s
+
+      - name: Deploy to production (rolling update)
+        run: |
+          SERVICES=(auth-service user-service course-service media-service \
+                    payment-service notification-service search-service \
+                    analytics-service certificate-service api-gateway)
+          TAG="main-${{ github.sha }}"
+
+          for SERVICE in "${SERVICES[@]}"; do
+            if [ -z "${{ inputs.service }}" ] || [ "${{ inputs.service }}" == "$SERVICE" ]; then
+              echo "🚀 Déploiement de $SERVICE avec le tag $TAG"
+              kubectl set image deployment/$SERVICE \
+                $SERVICE=ghcr.io/${{ github.repository }}/$SERVICE:${TAG} \
+                -n eduflex-prod
+
+              # Vérifier que le rollout se passe bien
+              kubectl rollout status deployment/$SERVICE \
+                -n eduflex-prod \
+                --timeout=300s
+
+              echo "✅ $SERVICE déployé avec succès"
+            fi
+          done
+
+      - name: Production smoke tests
+        run: |
+          sleep 30
+          # Test de santé général
+          STATUS=$(curl -sf -o /dev/null -w "%{http_code}" https://api.eduflex.com/health)
+          if [ "$STATUS" != "200" ]; then
+            echo "❌ Health check échoué (HTTP $STATUS)"
+            exit 1
+          fi
+          echo "✅ API Gateway opérationnelle"
+
+          # Test endpoint public (catalogue)
+          STATUS=$(curl -sf -o /dev/null -w "%{http_code}" https://api.eduflex.com/v1/courses/featured)
+          if [ "$STATUS" != "200" ]; then
+            echo "❌ Endpoint /courses/featured échoué (HTTP $STATUS)"
+            exit 1
+          fi
+          echo "✅ Course Service opérationnel"
+
+      - name: Notify deployment (Slack)
+        if: always()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "${{ job.status == 'success' && '✅' || '❌' }} *Déploiement Production EduFlex Pro*",
+              "attachments": [{
+                "color": "${{ job.status == 'success' && 'good' || 'danger' }}",
+                "fields": [
+                  { "title": "Commit", "value": "${{ github.sha }}", "short": true },
+                  { "title": "Auteur", "value": "${{ github.actor }}", "short": true },
+                  { "title": "Statut", "value": "${{ job.status }}", "short": true }
+                ]
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "⚠️  Déploiement échoué — rollback en cours..."
+          SERVICES=(api-gateway auth-service user-service course-service \
+                    media-service payment-service notification-service \
+                    search-service analytics-service certificate-service)
+          for SERVICE in "${SERVICES[@]}"; do
+            kubectl rollout undo deployment/$SERVICE -n eduflex-prod || true
+          done
+          echo "✅ Rollback effectué"

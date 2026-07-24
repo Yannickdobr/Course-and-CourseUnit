@@ -1,0 +1,20 @@
+﻿{
+  "title": "Test",
+  "sections": [
+    {
+      "id": "123e4567-e89b-12d3-a456-426614174000",
+      "title": "Contenu",
+      "order": 1,
+      "courseUnits": [
+        {
+          "id": "123e4567-e89b-12d3-a456-426614174001",
+          "title": "Unité 1",
+          "order": 1,
+          "status": "brouillon",
+          "isFree": false,
+          "price": 0
+        }
+      ]
+    }
+  ]
+}

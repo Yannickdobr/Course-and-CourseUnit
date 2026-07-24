@@ -1,0 +1,52 @@
+.page {
+  min-height: 100vh; background: linear-gradient(135deg, var(--primary-light), var(--bg));
+  display: flex; align-items: center; justify-content: center; padding: 2rem 1.5rem;
+}
+.card {
+  width: 100%; max-width: 440px; background: var(--bg-white);
+  border: 1.5px solid var(--border); border-radius: var(--radius-xl);
+  padding: 2.5rem 2.25rem; box-shadow: var(--shadow-md);
+}
+
+.logo { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--text); margin-bottom: 1.75rem; }
+.logoIcon { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; }
+
+.iconWrap {
+  width: 56px; height: 56px; border-radius: var(--radius-md);
+  background: var(--primary-light); color: var(--primary);
+  display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 1.1rem;
+}
+.title { font-size: 1.4rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+.subtitle { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.75rem; }
+
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.25rem; }
+.label { font-size: 0.84rem; font-weight: 500; color: var(--text); }
+.inputWrap { position: relative; display: flex; align-items: center; }
+.inputWrap > i { position: absolute; left: 13px; color: var(--text-muted); font-size: 17px; }
+.input {
+  width: 100%; padding: 11px 14px 11px 40px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); font-family: var(--font-body); font-size: 0.9rem;
+  color: var(--text); background: var(--bg-white); outline: none; transition: border-color 0.2s;
+}
+.input:focus { border-color: var(--primary); }
+
+.submit {
+  width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 12px; background: var(--primary); color: #fff; border: none; border-radius: var(--radius-sm);
+  font-size: 0.92rem; font-weight: 600; font-family: var(--font-body); cursor: pointer; transition: background 0.2s;
+}
+.submit:hover { background: var(--primary-hover); }
+.submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.error { display: flex; align-items: center; gap: 7px; font-size: 0.8rem; color: var(--pink); background: var(--pink-light); border-radius: var(--radius-sm); padding: 9px 12px; margin-bottom: 1rem; }
+.error i { font-size: 16px; }
+
+.back { display: inline-flex; align-items: center; gap: 6px; margin-top: 1.5rem; font-size: 0.85rem; color: var(--primary); }
+.back:hover { text-decoration: underline; }
+
+/* Success */
+.successIcon { width: 64px; height: 64px; border-radius: 50%; background: var(--success-light); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 34px; margin-bottom: 1.1rem; }
+.successNote { display: flex; align-items: flex-start; gap: 9px; font-size: 0.84rem; color: var(--text-secondary); background: var(--primary-light); border-radius: var(--radius-sm); padding: 0.9rem 1rem; margin: 1.25rem 0; line-height: 1.6; }
+.successNote i { color: var(--primary); font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+.resend { background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer; font-family: var(--font-body); font-size: inherit; }
+.resend:hover { text-decoration: underline; }

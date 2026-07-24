@@ -1,0 +1,98 @@
+.card {
+  display: block;
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.card:hover {
+  border-color: var(--primary);
+  transform: translateY(-3px);
+}
+
+/* Thumbnail */
+.thumb {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.thumbEmoji { font-size: 3rem; }
+
+/* Body */
+.body { padding: 1rem; }
+
+.category {
+  font-size: 0.7rem;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 5px;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  border-radius: 6px;
+  padding: 3px 9px;
+  margin-bottom: 7px;
+}
+.badgeDefault { background: var(--primary-light); color: var(--primary-dark); }
+.badgeOrange  { background: var(--orange-light);  color: #c2410c; }
+.badgeGreen   { background: var(--success-light); color: #065f46; }
+
+.title {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.instructor {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+/* Meta row */
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.stars      { font-size: 0.75rem; color: var(--gold); }
+.ratingNum  { color: var(--text-muted); font-size: 0.72rem; }
+.students   { font-size: 0.72rem; color: var(--text-muted); }
+
+/* Footer */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-gray);
+  padding-top: 9px;
+}
+.price {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--orange);
+}
+.priceNote {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-left: 3px;
+}
+.level {
+  font-size: 0.7rem;
+  background: var(--bg);
+  color: var(--text-muted);
+  border-radius: 5px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+}

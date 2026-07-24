@@ -1,0 +1,54 @@
+.form { display: flex; flex-direction: column; gap: 1.1rem; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 0.8rem; font-weight: 500; color: var(--text); }
+
+.methods { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.method {
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 12px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg-white);
+  cursor: pointer; font-size: 0.82rem; color: var(--text);
+  transition: border-color 0.18s, background 0.18s;
+}
+.method:hover { border-color: var(--primary); }
+.methodActive { border-color: var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.method i { font-size: 18px; }
+
+.inputWrap { position: relative; display: flex; align-items: center; }
+.input {
+  width: 100%; padding: 11px 14px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); font-family: var(--font-body);
+  font-size: 0.88rem; color: var(--text); background: var(--bg-white);
+  outline: none; transition: border-color 0.2s;
+}
+.input:focus { border-color: var(--primary); }
+.unit { position: absolute; right: 14px; font-size: 0.8rem; color: var(--text-muted); pointer-events: none; }
+
+.amountRow { display: flex; align-items: center; justify-content: space-between; }
+.maxBtn {
+  background: none; border: none; color: var(--primary);
+  font-size: 0.76rem; font-weight: 600; cursor: pointer; font-family: var(--font-body);
+}
+.maxBtn:hover { text-decoration: underline; }
+
+.submit {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 12px; background: var(--primary); color: #fff; border: none;
+  border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 600;
+  font-family: var(--font-body); cursor: pointer; transition: background 0.2s;
+}
+.submit:hover { background: var(--primary-hover); }
+.submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.error {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 0.8rem; color: var(--pink);
+  background: var(--pink-light); border-radius: var(--radius-sm); padding: 9px 12px;
+}
+.success {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 0.82rem; color: var(--success);
+  background: var(--success-light); border-radius: var(--radius-sm); padding: 10px 12px;
+}
+.error i, .success i { font-size: 16px; }

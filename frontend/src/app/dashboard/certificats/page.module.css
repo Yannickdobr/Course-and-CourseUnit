@@ -1,0 +1,219 @@
+.page { padding: 2rem 1.75rem; max-width: 1100px; }
+
+/* ── Header ── */
+.header { margin-bottom: 1.75rem; }
+.title  { font-size: 1.2rem; font-weight: 600; color: var(--text); }
+.sub    { font-size: 0.84rem; color: var(--text-secondary); margin-top: 3px; }
+
+/* ── Grille ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Carte certificat ── */
+.certCard {
+  position: relative;
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.certCard:hover {
+  border-color: var(--gold);
+  box-shadow: 0 4px 24px rgba(245,158,11,0.1);
+  transform: translateY(-2px);
+}
+
+/* Ruban décoratif */
+.certRibbon {
+  position: absolute;
+  top: 0; right: 0;
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, var(--gold) 0%, #f59e0b 100%);
+  display: flex; align-items: center; justify-content: center;
+  border-bottom-left-radius: var(--radius-md);
+}
+.certRibbon i { color: #fff; font-size: 1.1rem; }
+
+/* Top de la carte */
+.certCardTop {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1.25rem 1.25rem 0.75rem;
+}
+.certThumb {
+  width: 48px; height: 48px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; flex-shrink: 0;
+}
+.certCategory {
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+.certLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Corps */
+.certBody {
+  padding: 0 1.25rem 0.875rem;
+  border-bottom: 1px solid var(--border-gray);
+}
+.certTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+  margin-bottom: 0.5rem;
+}
+.certRecipient {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.3rem;
+}
+.certDate {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.certDate i { font-size: 0.85rem; }
+
+/* Code de vérification */
+.certCode {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0.75rem 1.25rem;
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--border-gray);
+}
+.certCodeLabel {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+.certCodeVal {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82rem;
+  color: var(--primary);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* Actions */
+.certActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.25rem;
+}
+
+.btnDownload {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px;
+  background: var(--success-light);
+  color: var(--success);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem; font-weight: 600;
+  font-family: var(--font-body);
+  text-decoration: none; cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.btnDownload:hover { background: var(--success); color: #fff; }
+.btnDownload i { font-size: 13px; }
+
+.btnShare {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px;
+  background: #e8f0fe;
+  color: #0077b5;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem; font-weight: 600;
+  font-family: var(--font-body); cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.btnShare:hover { background: #0077b5; color: #fff; }
+.btnShare i { font-size: 13px; }
+
+.btnIcon {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.9rem; cursor: pointer;
+  margin-left: auto;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btnIcon:hover { border-color: var(--primary); color: var(--primary); }
+
+/* ── CTA ── */
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--primary-light);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;
+}
+.ctaText {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.88rem; color: var(--primary-dark);
+}
+.ctaText i { color: var(--gold); font-size: 1.1rem; }
+
+.btnPrimary {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px;
+  background: var(--primary); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font-size: 0.84rem; font-weight: 600;
+  font-family: var(--font-body); text-decoration: none;
+  white-space: nowrap; flex-shrink: 0;
+  transition: background 0.2s, transform 0.15s;
+}
+.btnPrimary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+/* ── État vide ── */
+.empty {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0.875rem; padding: 4rem 2rem; text-align: center;
+  background: var(--bg-white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.emptyIcon  { font-size: 3.5rem; }
+.emptyTitle { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+.emptySub   { font-size: 0.88rem; color: var(--text-secondary); max-width: 360px; line-height: 1.6; }
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .page { padding: 1rem; }
+  .grid { grid-template-columns: 1fr; }
+  .cta  { flex-direction: column; align-items: flex-start; }
+}

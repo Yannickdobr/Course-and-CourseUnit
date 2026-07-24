@@ -1,0 +1,91 @@
+.page { padding: 2rem 1.75rem; max-width: 1100px; }
+
+.header { margin-bottom: 1.5rem; }
+.title { font-size: 1.2rem; font-weight: 600; color: var(--text); }
+.sub   { font-size: 0.84rem; color: var(--text-secondary); margin-top: 3px; }
+
+/* ── Récap ── */
+.statsGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+.statCard {
+  background: var(--bg-white); border: 1.5px solid var(--border);
+  border-radius: var(--radius-md); padding: 1.1rem;
+}
+.statTop { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+.statLabel { font-size: 0.74rem; color: var(--text-muted); }
+.statIcon {
+  width: 34px; height: 34px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center; font-size: 17px;
+}
+.statVal { font-size: 1.35rem; font-weight: 700; color: var(--text); }
+
+/* ── Filtres ── */
+.filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.filterBtn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 7px 16px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-full); background: var(--surface);
+  color: var(--text-secondary); font-size: 0.82rem; font-weight: 500;
+  font-family: var(--font-body); cursor: pointer; transition: all 0.18s;
+}
+.filterBtn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.filterActive { background: var(--primary) !important; border-color: var(--primary) !important; color: #fff !important; }
+
+/* ── Tableau ── */
+.card {
+  background: var(--bg-white); border: 1.5px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden;
+}
+.tableWrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+.table th {
+  text-align: left; font-size: 0.7rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--text-muted); padding: 0.85rem 1rem;
+  border-bottom: 1.5px solid var(--border); background: var(--bg);
+}
+.table td { padding: 0.95rem 1rem; border-bottom: 1.5px solid var(--border-gray); color: var(--text); vertical-align: middle; }
+.table tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background: var(--bg); }
+.tRight { text-align: right; }
+.tCenter { text-align: center; }
+.tMuted { color: var(--text-muted); font-size: 0.78rem; }
+
+.courseCell { display: flex; align-items: center; gap: 10px; }
+.courseThumb {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;
+}
+.courseTitle { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
+
+.amount { font-weight: 700; color: var(--orange); white-space: nowrap; }
+
+.badge { display: inline-block; font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: var(--radius-full); white-space: nowrap; }
+.badgePurple { background: var(--primary-light); color: var(--primary); }
+.badgeOrange { background: var(--orange-light);  color: var(--orange); }
+.badgeGreen  { background: var(--success-light); color: var(--success); }
+.badgePink   { background: var(--pink-light);    color: var(--pink); }
+
+.invoiceBtn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-secondary); font-size: 0.78rem;
+  font-family: var(--font-body); text-decoration: none; cursor: pointer; white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+}
+.invoiceBtn:hover { color: var(--primary); border-color: var(--primary); }
+.invoiceBtn i { font-size: 14px; }
+
+/* ── Empty ── */
+.empty {
+  display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+  padding: 3.5rem 2rem; text-align: center;
+}
+.emptyIcon { font-size: 2.6rem; }
+.emptyTitle { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+.emptySub { font-size: 0.84rem; color: var(--text-secondary); }
+
+@media (max-width: 760px) {
+  .statsGrid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .page { padding: 1.25rem 1rem; }
+}

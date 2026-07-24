@@ -1,0 +1,6 @@
+#FileLock
+#Tue Jun 16 23:38:33 WAT 2026
+server=192.168.1.118\:54234
+hostName=192.168.1.118
+method=file
+id=19ed29614027d1910fcb609402116d96d6c53b80b31

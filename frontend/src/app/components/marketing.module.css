@@ -1,0 +1,118 @@
+/* ─── Styles partagés des pages marketing / contenu ─── */
+
+.page { background: var(--bg); }
+
+/* ── Hero ── */
+.hero {
+  background: linear-gradient(135deg, var(--primary-light), var(--bg-white));
+  border-bottom: 1.5px solid var(--border);
+}
+.heroInner {
+  max-width: 1120px; margin: 0 auto; padding: 3.5rem 1.5rem;
+  display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; align-items: center;
+}
+.heroBadge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg-white); border: 1.5px solid var(--border);
+  color: var(--primary); font-size: 0.78rem; font-weight: 600;
+  padding: 5px 14px; border-radius: var(--radius-full); margin-bottom: 1rem;
+}
+.heroBadge i { font-size: 15px; }
+.heroTitle { font-size: clamp(1.9rem, 4vw, 2.8rem); line-height: 1.12; margin-bottom: 1rem; }
+.heroTitle span { color: var(--primary); }
+.heroSub { font-size: 1rem; color: var(--text-secondary); max-width: 52ch; margin-bottom: 1.5rem; line-height: 1.7; }
+.heroActions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.heroVisual {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7rem; min-height: 200px;
+}
+
+/* ── Sections ── */
+.section { padding: 3.5rem 0; }
+.sectionAlt { padding: 3.5rem 0; background: var(--bg-white); border-block: 1.5px solid var(--border); }
+.container { max-width: 1120px; margin: 0 auto; padding: 0 1.5rem; }
+.sectionHead { text-align: center; max-width: 640px; margin: 0 auto 2.5rem; }
+.sectionHead h2 { margin-bottom: 0.6rem; }
+.sectionSub { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; }
+
+/* ── Grilles ── */
+.grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+
+/* ── Feature card ── */
+.featCard {
+  background: var(--bg-white); border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.5rem;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.featCard:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+.featIcon {
+  width: 46px; height: 46px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: 1rem;
+}
+.featTitle { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+.featDesc { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.65; }
+
+/* ── Étapes ── */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; counter-reset: step; }
+.step { text-align: center; position: relative; }
+.stepNum {
+  width: 48px; height: 48px; margin: 0 auto 1rem; border-radius: 50%;
+  background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; font-weight: 700; font-family: var(--font-display);
+}
+.stepTitle { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+.stepDesc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+
+/* ── Stats ── */
+.statRow {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem;
+  background: var(--bg-white); border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.75rem;
+}
+.stat { text-align: center; }
+.statNum { font-size: 1.8rem; font-weight: 700; color: var(--primary); font-family: var(--font-display); }
+.statLabel { font-size: 0.82rem; color: var(--text-secondary); margin-top: 3px; }
+
+/* ── Liste à puces check ── */
+.checkList { display: flex; flex-direction: column; gap: 0.7rem; }
+.checkItem { display: flex; align-items: flex-start; gap: 10px; font-size: 0.92rem; color: var(--text); }
+.checkItem i { color: var(--success); font-size: 19px; flex-shrink: 0; }
+
+/* ── CTA banner ── */
+.ctaBanner {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: var(--radius-xl); padding: 2.75rem 2rem; text-align: center;
+  color: #fff; margin: 3.5rem auto; max-width: 1120px;
+}
+.ctaTitle { color: #fff; font-size: 1.6rem; margin-bottom: 0.6rem; }
+.ctaSub { color: rgba(255,255,255,0.88); font-size: 0.95rem; max-width: 50ch; margin: 0 auto 1.5rem; line-height: 1.7; }
+.ctaActions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+.ctaWhite {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: #fff; color: var(--primary); border-radius: var(--radius-sm);
+  padding: 12px 26px; font-size: 0.9rem; font-weight: 600; text-decoration: none;
+  transition: transform 0.15s;
+}
+.ctaWhite:hover { transform: translateY(-2px); }
+.ctaGhost {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.5);
+  border-radius: var(--radius-sm); padding: 12px 26px; font-size: 0.9rem; font-weight: 600; text-decoration: none;
+  transition: background 0.2s;
+}
+.ctaGhost:hover { background: rgba(255,255,255,0.12); }
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .heroInner { grid-template-columns: 1fr; }
+  .heroVisual { display: none; }
+  .grid4, .steps { grid-template-columns: repeat(2, 1fr); }
+  .grid3 { grid-template-columns: 1fr 1fr; }
+  .statRow { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+}
+@media (max-width: 560px) {
+  .grid2, .grid3, .grid4, .steps { grid-template-columns: 1fr; }
+}
